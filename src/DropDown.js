@@ -1,10 +1,12 @@
 import React, { Component } from "react";
+import "./App.css";
 
 class DropDown extends Component {
   render(){
   return (
-    <div>
-      <select onChange={this.props.changeShape}>
+    <div style={{marginBottom:"10px"}}>
+      <label>Shape:</label>
+      <select onChange={this.props.changeShape} className ="dropDown">
       <option value=""></option>
         <option value="Circle">Circle</option>
         <option value="Square">Square</option>

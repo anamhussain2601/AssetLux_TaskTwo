@@ -22,28 +22,30 @@ class App extends Component {
       recent:[],
       undoRedoIndex:-1
     }
-  }
+  };
 
   updateRecent = () =>{
     let rec = this.state.recent;
     if(rec.length >= 4){
       rec.shift();
     }
-    if(rec.length > 1){
+    if(this.props.color && this.props.shape){
+      rec.push({color:this.props.color, shape:this.props.shape});
+    }
+    if(rec.length > 0){
       this.setState({
         undoRedoIndex:rec.length-1
       })
     }
-    rec.push({color:this.props.color, shape:this.props.shape})
-  }
+  };
 
   changeShape=(e)=>{
     this.props.setSha(e.target.value);
-  }
+  };
 
   changeColor=(e)=>{
     this.props.setCol(e.target.value);
-  }
+  };
 
   onUpdateColor=(isUpdateRecent)=>{
     if(!this.props.color && !this.props.shape){
@@ -51,13 +53,12 @@ class App extends Component {
     }
     this.props.updateShaCol(true);
     isUpdateRecent ? this.updateRecent() : null;
-  }
+  };
 
   undo=()=>{
     let recentObj;
-    
-    if(this.state.undoRedoIndex>=0){
-      recentObj = this.state.recent[this.state.undoRedoIndex];
+    if(this.state.undoRedoIndex>0){
+      recentObj = this.state.recent[this.state.undoRedoIndex-1];
       this.setState({
         undoRedoIndex:this.state.undoRedoIndex-1
       })
@@ -65,44 +66,42 @@ class App extends Component {
       alert("Can't undo more than three.");
     }
     if(recentObj){
-      console.log(recentObj);
       this.props.setSha(recentObj.shape);
       this.props.setCol(recentObj.color);
     }
     this.onUpdateColor(false);
-  }
+  };
   
   redo=()=>{
     let recentObj;
-    
-    if(this.state.undoRedoIndex>=0){
-      recentObj = this.state.recent[this.state.undoRedoIndex];
+    if(this.state.undoRedoIndex < this.state.recent.length-1){
+      recentObj = this.state.recent[this.state.undoRedoIndex+1];
       this.setState({
-        undoRedoIndex:this.state.undoRedoIndex-1
+        undoRedoIndex:this.state.undoRedoIndex+1
       })
     }else{
-      alert("Can't undo more than three.");
+      alert("Can't redo more than three.");
     }
     if(recentObj){
-      console.log(recentObj);
       this.props.setSha(recentObj.shape);
       this.props.setCol(recentObj.color);
     }
     this.onUpdateColor(false);
-  }
+  };
 
   render() {
     return (
       <div>
+        <h1>Shapes</h1>
         <div style={{ display: "flex", flexDirection: "row", justifyContent:"space-between"}}>
           <div>
             <p>Color Code for testing: #FFFF00 #7CFC00 #00008B #FF69B4</p>
             <DropDown changeShape={this.changeShape}/>
             <Input changeColor={this.changeColor} color={this.props.color}/>
             <Button label="Update Color" onButtonClick={this.onUpdateColor}/>
-            <div style={{ display: "flex", flexDirection: "row" }}>
-              <Button undoRedoStyle={undoRedoStyle} label="undo" onButtonClick={this.undo}/>
-              <Button undoRedoStyle={undoRedoStyle} label="redo" onButtonClick={this.redo}/>
+            <div style={{ display: "flex", flexDirection: "row" , justifyContent:'center'}}>
+              <Button  label="undo" onButtonClick={this.undo}/>
+              <Button  label="redo" onButtonClick={this.redo}/>
             </div>
           </div>
             {this.props.update ? <Shapes shape={this.props.shape} color={this.props.color}/> : null}
